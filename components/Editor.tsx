@@ -1,0 +1,174 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useEditorStore } from "@/store/editorStore";
+import { loadImageFromFile } from "@/utils/imageUtils";
+import { extractDominantColors, getBrightestAndDarkest } from "@/utils/colorExtractor";
+import { renderCover } from "@/utils/renderer";
+import ImageUpload from "./ImageUpload";
+import ModeSelector from "./ModeSelector";
+import BackgroundPanel from "./BackgroundPanel";
+import SizePresetPanel from "./SizePresetPanel";
+import PreviewCanvas from "./PreviewCanvas";
+import DownloadButton from "./DownloadButton";
+import TextOverlayPanel from "./TextOverlayPanel";
+import ImageControls from "./ImageControls";
+
+export default function Editor() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isRendering, setIsRendering] = useState(false);
+  const {
+    image,
+    mode,
+    background,
+    output,
+    text,
+    tileOffset,
+    tileScale,
+    imageOffset,
+    imageScale,
+    imageRotation,
+    setImage,
+    setImageOffset,
+    setImageScale,
+    showSafeZone,
+  } = useEditorStore();
+
+  useEffect(() => {
+    if (image?.bitmap && canvasRef.current) {
+      handleRender();
+    }
+  }, [
+    image,
+    mode,
+    background,
+    output,
+    text,
+    tileOffset,
+    tileScale,
+    imageOffset,
+    imageScale,
+    imageRotation,
+  ]);
+
+  // 키보드 이벤트 핸들러
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!image) return;
+
+      // input, textarea, select 등 입력 요소에 포커스가 있으면 무시
+      const activeElement = document.activeElement;
+      if (
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          activeElement.tagName === "SELECT" ||
+          activeElement.isContentEditable)
+      ) {
+        return;
+      }
+
+      const step = e.shiftKey ? 10 : 1;
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setImageOffset({ ...imageOffset, x: imageOffset.x - step });
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setImageOffset({ ...imageOffset, x: imageOffset.x + step });
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setImageOffset({ ...imageOffset, y: imageOffset.y - step });
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setImageOffset({ ...imageOffset, y: imageOffset.y + step });
+      } else if (e.key === "=" || e.key === "+") {
+        e.preventDefault();
+        setImageScale(Math.min(4, imageScale + 0.1));
+      } else if (e.key === "-" || e.key === "_") {
+        e.preventDefault();
+        setImageScale(Math.max(0.1, imageScale - 0.1));
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [image, imageOffset, imageScale, setImageOffset, setImageScale]);
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      const imageData = await loadImageFromFile(file);
+      setImage(imageData);
+
+      // 자동 색상 추출 및 그라데이션 제안
+      if (imageData.bitmap) {
+        const colors = await extractDominantColors(imageData.bitmap);
+        if (colors.length >= 2) {
+          const { brightest, darkest } = getBrightestAndDarkest(colors);
+          // 그라데이션 제안은 BackgroundPanel에서 처리
+        }
+      }
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      alert("이미지 업로드에 실패했습니다.");
+    }
+  };
+
+  const handleRender = async () => {
+    if (!image?.bitmap || !canvasRef.current) return;
+
+    setIsRendering(true);
+    try {
+      await renderCover(canvasRef.current, {
+        image,
+        mode,
+        background,
+        output,
+        text,
+        tileOffset,
+        tileScale,
+        imageOffset,
+        imageScale,
+        imageRotation,
+      });
+    } catch (error) {
+      console.error("Render failed:", error);
+    } finally {
+      setIsRendering(false);
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 좌측 컨트롤 패널 */}
+        <div className="lg:col-span-1 space-y-6">
+          <ImageUpload onUpload={handleImageUpload} />
+
+          {image && (
+            <>
+              <ModeSelector />
+              <ImageControls />
+              <BackgroundPanel />
+              <SizePresetPanel />
+              <TextOverlayPanel />
+            </>
+          )}
+        </div>
+
+        {/* 우측 미리보기 */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-lg p-4 sticky top-4">
+            <PreviewCanvas
+              canvasRef={canvasRef}
+              showSafeZone={showSafeZone}
+              isRendering={isRendering}
+            />
+            {image && <DownloadButton canvasRef={canvasRef} />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
