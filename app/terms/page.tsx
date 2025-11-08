@@ -16,7 +16,7 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-semibold mt-8 mb-4">1. Free Use</h2>
           <p className="mb-4">
-            The Service is provided "as is" for personal and commercial use of
+            The Service is provided &quot;as is&quot; for personal and commercial use of
             generated images.
           </p>
 

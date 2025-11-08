@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
         <div className="prose max-w-none">
           <p className="mb-4">
-            This website ("the Service") does not collect, store, or transmit any
+            This website (&quot;the Service&quot;) does not collect, store, or transmit any
             personal data.
           </p>
           <p className="mb-4">
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              Google's Privacy Policy
+              Google&apos;s Privacy Policy
             </a>
             .
           </p>
