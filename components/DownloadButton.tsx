@@ -10,20 +10,69 @@ interface DownloadButtonProps {
 const AD_DURATION = 5; // 5초 광고 카운트다운
 
 export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
-  const { output, mode, setOutput } = useEditorStore();
+  const {
+    output,
+    mode,
+    setOutput,
+    background,
+    text,
+    tileOffset,
+    tileScale,
+    imageOffset,
+    imageScale,
+    imageRotation,
+  } = useEditorStore();
   const [showAdGate, setShowAdGate] = useState(false);
   const [countdown, setCountdown] = useState(AD_DURATION);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 편집 상태를 추적하기 위한 ref
+  const prevEditStateRef = useRef<string>("");
+
+  // 편집 상태가 변경되면 광고 게이트 닫기
+  useEffect(() => {
+    const currentEditState = JSON.stringify({
+      mode,
+      background,
+      text,
+      tileOffset,
+      tileScale,
+      imageOffset,
+      imageScale,
+      imageRotation,
+      output,
+    });
+
+    if (prevEditStateRef.current && prevEditStateRef.current !== currentEditState) {
+      // 편집이 발생했고 광고 게이트가 열려있으면 닫기
+      if (showAdGate) {
+        setShowAdGate(false);
+        setCountdown(AD_DURATION);
+        if (countdownRef.current) {
+          clearTimeout(countdownRef.current);
+        }
+      }
+    }
+
+    prevEditStateRef.current = currentEditState;
+  }, [
+    mode,
+    background,
+    text,
+    tileOffset,
+    tileScale,
+    imageOffset,
+    imageScale,
+    imageRotation,
+    output,
+    showAdGate,
+  ]);
 
   useEffect(() => {
     if (showAdGate && countdown > 0) {
       countdownRef.current = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
-    } else if (showAdGate && countdown === 0) {
-      handleDownload();
-      setShowAdGate(false);
-      setCountdown(AD_DURATION);
     }
 
     return () => {
@@ -32,11 +81,6 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
       }
     };
   }, [showAdGate, countdown]);
-
-  const handleDownloadClick = () => {
-    setShowAdGate(true);
-    setCountdown(AD_DURATION);
-  };
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -60,57 +104,66 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
     );
   };
 
-  const handleSkip = () => {
-    if (countdownRef.current) {
-      clearTimeout(countdownRef.current);
-    }
-    setShowAdGate(false);
+  const handleDownloadClick = () => {
+    setShowAdGate(true);
     setCountdown(AD_DURATION);
-    handleDownload();
   };
 
+  // 광고 게이트 표시 중
   if (showAdGate) {
     return (
-      <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
-        <div className="text-center mb-4">
-          <div className="text-2xl font-bold text-yellow-800 mb-2">
-            {countdown}초
-          </div>
-          <p className="text-sm text-gray-700">
-            광고를 시청해주세요. 다운로드가 곧 시작됩니다.
-          </p>
-        </div>
-
-        {/* 광고 슬롯 (실제 AdSense 코드로 교체) */}
-        <div className="bg-gray-200 rounded p-8 text-center text-gray-500 mb-4 min-h-[250px] flex items-center justify-center">
-          <div>
-            <div className="text-sm mb-2">광고 영역</div>
-            <div className="text-xs">
-              (AdSense 광고 단위가 여기에 표시됩니다)
+      <div className="mt-4 space-y-6">
+        {/* 광고 영역 - 명확히 분리 */}
+        <div
+          className="border border-gray-300 rounded p-3"
+          role="complementary"
+          aria-label="광고"
+        >
+          <p className="text-xs text-gray-600 mb-3">광고</p>
+          {/* 광고 슬롯 (실제 AdSense 코드로 교체) */}
+          <div
+            id="adsense-slot"
+            className="bg-gray-100 rounded min-h-[250px] flex items-center justify-center"
+          >
+            <div className="text-center text-gray-400 text-sm">
+              <div className="mb-2">광고 영역</div>
+              <div className="text-xs">
+                (AdSense 광고 단위가 여기에 표시됩니다)
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2">
+        {/* 다운로드 패널 - 광고와 분리, 최소 24px 여백 */}
+        <div className="space-y-3">
+          <div className="text-center">
+            {countdown > 0 ? (
+              <p className="text-sm text-gray-600">
+                잠시만요… 준비 중입니다. ({countdown}초)
+              </p>
+            ) : (
+              <p className="text-sm text-gray-600">
+                다운로드를 시작할 수 있어요.
+              </p>
+            )}
+          </div>
           <button
-            onClick={handleSkip}
-            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
-          >
-            건너뛰기
-          </button>
-          <button
+            disabled={countdown > 0}
             onClick={() => {
-              setCountdown(0);
+              handleDownload();
+              setShowAdGate(false);
+              setCountdown(AD_DURATION);
             }}
-            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            바로 다운로드
+            다운로드
           </button>
         </div>
       </div>
     );
   }
 
+  // 일반 다운로드 버튼
   return (
     <div className="mt-4 space-y-2">
       <div className="flex gap-2 mb-2">
@@ -159,10 +212,6 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
       >
         다운로드 ({output.format.toUpperCase()})
       </button>
-      <p className="text-xs text-gray-500 text-center">
-        다운로드 전 짧은 광고가 표시됩니다
-      </p>
     </div>
   );
 }
-

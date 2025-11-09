@@ -10,6 +10,8 @@ import type {
 } from "@/types";
 
 interface EditorStore extends EditorState {
+  isDirty: boolean;
+  isReady: boolean;
   setImage: (image: ImageData | null) => void;
   setMode: (mode: Mode) => void;
   setBackground: (background: Background) => void;
@@ -21,6 +23,8 @@ interface EditorStore extends EditorState {
   setImageScale: (scale: number) => void;
   setImageRotation: (rotation: number) => void;
   setShowSafeZone: (show: boolean) => void;
+  markDirty: () => void;
+  markReady: () => void;
   reset: () => void;
 }
 
@@ -57,24 +61,32 @@ export const useEditorStore = create<EditorStore>()(
   persist(
     (set) => ({
       ...defaultState,
-      setImage: (image) => set({ image }),
-      setMode: (mode) => set({ mode }),
-      setBackground: (background) => set({ background }),
+      isDirty: true,
+      isReady: false,
+      setImage: (image) => set({ image, isDirty: true, isReady: false }),
+      setMode: (mode) => set({ mode, isDirty: true, isReady: false }),
+      setBackground: (background) => set({ background, isDirty: true, isReady: false }),
       setOutput: (output) =>
         set((state) => ({
           output: { ...state.output, ...output },
+          isDirty: true,
+          isReady: false,
         })),
       setText: (text) =>
         set((state) => ({
           text: { ...state.text, ...text },
+          isDirty: true,
+          isReady: false,
         })),
-      setTileOffset: (tileOffset) => set({ tileOffset }),
-      setTileScale: (tileScale) => set({ tileScale }),
-      setImageOffset: (imageOffset) => set({ imageOffset }),
-      setImageScale: (imageScale) => set({ imageScale }),
-      setImageRotation: (imageRotation) => set({ imageRotation }),
+      setTileOffset: (tileOffset) => set({ tileOffset, isDirty: true, isReady: false }),
+      setTileScale: (tileScale) => set({ tileScale, isDirty: true, isReady: false }),
+      setImageOffset: (imageOffset) => set({ imageOffset, isDirty: true, isReady: false }),
+      setImageScale: (imageScale) => set({ imageScale, isDirty: true, isReady: false }),
+      setImageRotation: (imageRotation) => set({ imageRotation, isDirty: true, isReady: false }),
       setShowSafeZone: (showSafeZone) => set({ showSafeZone }),
-      reset: () => set(defaultState),
+      markDirty: () => set({ isDirty: true, isReady: false }),
+      markReady: () => set({ isDirty: false, isReady: true }),
+      reset: () => set({ ...defaultState, isDirty: true, isReady: false }),
     }),
     {
       name: "notion-cover-editor",

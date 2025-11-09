@@ -34,6 +34,7 @@ export default function Editor() {
     showSafeZone,
   } = useEditorStore();
 
+  // 자동 렌더링 (실시간 미리보기)
   useEffect(() => {
     if (image?.bitmap && canvasRef.current) {
       handleRender();
