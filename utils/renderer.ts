@@ -88,7 +88,7 @@ export async function renderCover(
 
   // 텍스트 오버레이
   if (text?.enabled && text.content) {
-    renderText(ctx, text, renderWidth, renderHeight);
+    await renderText(ctx, text, renderWidth, renderHeight);
   }
 
   // 최종 다운샘플링
@@ -282,14 +282,57 @@ function renderTile(
   ctx.translate(-offset.x, -offset.y);
 }
 
-function renderText(
+async function renderText(
   ctx: CanvasRenderingContext2D,
   text: TextOverlay,
   width: number,
   height: number
-): void {
+): Promise<void> {
+  // 폰트 이름 처리 (공백이 있으면 따옴표로 감싸기)
+  const fontFamily = text.font.includes(" ") ? `"${text.font}"` : text.font;
+  
+  // 폰트가 로드될 때까지 대기
+  try {
+    // document.fonts.ready가 완료될 때까지 대기
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+    
+    // 폰트가 로드되었는지 확인 (여러 방법 시도)
+    const fontSpec = `${text.weight} ${text.size}px ${fontFamily}, sans-serif`;
+    
+    if (document.fonts && document.fonts.check) {
+      // 폰트가 이미 로드되어 있는지 확인
+      let isLoaded = document.fonts.check(fontSpec);
+      
+      if (!isLoaded) {
+        // 폰트 로드 시도
+        try {
+          await document.fonts.load(fontSpec);
+          // 다시 확인
+          isLoaded = document.fonts.check(fontSpec);
+        } catch (e) {
+          // 폰트 로드 실패 시 fallback 사용
+        }
+      }
+      
+      // 폰트 이름만으로도 확인
+      if (!isLoaded) {
+        const fontNameOnly = `${text.weight} 12px ${fontFamily}`;
+        isLoaded = document.fonts.check(fontNameOnly);
+      }
+    }
+  } catch (e) {
+    // 폰트 로딩 실패 시 fallback 사용
+  }
+
   ctx.save();
-  ctx.font = `${text.weight} ${text.size}px ${text.font}`;
+  const fontSize = text.size;
+  const fontWeight = text.weight;
+  
+  // 폰트 설정
+  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}, sans-serif`;
+  
   ctx.fillStyle = text.color;
   ctx.textAlign = text.align;
   ctx.textBaseline = "middle";

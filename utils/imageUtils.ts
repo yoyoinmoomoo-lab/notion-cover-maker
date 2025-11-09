@@ -3,26 +3,41 @@ import type { ImageData } from "@/types";
 export async function loadImageFromFile(
   file: File
 ): Promise<ImageData> {
-  const arrayBuffer = await file.arrayBuffer();
-  const blob = new Blob([arrayBuffer]);
-  const imageBitmap = await createImageBitmap(blob);
-
-  // EXIF orientation 처리 (간단 버전, 실제로는 EXIF.js 필요)
-  let exifOrientation = 1;
   try {
-    // 기본값으로 1 (정상) 사용
-    // 실제 구현 시 EXIF.js로 orientation 읽기
-  } catch (e) {
-    console.warn("EXIF orientation detection failed", e);
+    const arrayBuffer = await file.arrayBuffer();
+    const blob = new Blob([arrayBuffer], { type: file.type });
+    
+    // createImageBitmap이 지원되지 않는 경우를 대비
+    if (!window.createImageBitmap) {
+      throw new Error("createImageBitmap을 지원하지 않는 브라우저입니다.");
+    }
+
+    const imageBitmap = await createImageBitmap(blob);
+    
+    if (!imageBitmap) {
+      throw new Error("이미지 비트맵을 생성할 수 없습니다.");
+    }
+
+    // EXIF orientation 처리 (간단 버전, 실제로는 EXIF.js 필요)
+    let exifOrientation = 1;
+    try {
+      // 기본값으로 1 (정상) 사용
+      // 실제 구현 시 EXIF.js로 orientation 읽기
+    } catch (e) {
+      console.warn("EXIF orientation detection failed", e);
+    }
+
+    const originalUrl = URL.createObjectURL(file);
+
+    return {
+      bitmap: imageBitmap,
+      exifOrientation,
+      originalUrl,
+    };
+  } catch (error) {
+    console.error("loadImageFromFile error:", error);
+    throw error;
   }
-
-  const originalUrl = URL.createObjectURL(file);
-
-  return {
-    bitmap: imageBitmap,
-    exifOrientation,
-    originalUrl,
-  };
 }
 
 export function applyExifOrientation(

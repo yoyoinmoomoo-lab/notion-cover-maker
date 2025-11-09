@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useEditorStore } from "@/store/editorStore";
 
 export default function ImageControls() {
@@ -16,6 +17,23 @@ export default function ImageControls() {
     setTileOffset,
     setTileScale,
   } = useEditorStore();
+
+  // 로컬 state로 입력 중간 상태 관리
+  const [xInput, setXInput] = useState(String(imageOffset.x));
+  const [yInput, setYInput] = useState(String(imageOffset.y));
+  const [tileXInput, setTileXInput] = useState(String(tileOffset.x));
+  const [tileYInput, setTileYInput] = useState(String(tileOffset.y));
+
+  // imageOffset이 외부에서 변경되면 로컬 state 동기화
+  useEffect(() => {
+    setXInput(String(imageOffset.x));
+    setYInput(String(imageOffset.y));
+  }, [imageOffset.x, imageOffset.y]);
+
+  useEffect(() => {
+    setTileXInput(String(tileOffset.x));
+    setTileYInput(String(tileOffset.y));
+  }, [tileOffset.x, tileOffset.y]);
 
   if (mode === "tile") {
     return (
@@ -41,15 +59,26 @@ export default function ImageControls() {
               <label className="block text-xs text-gray-600 mb-1">X 오프셋</label>
               <input
                 type="number"
-                value={tileOffset.x}
+                value={tileXInput}
                 onChange={(e) => {
                   const val = e.target.value;
-                  if (val === "") {
-                    setTileOffset({ ...tileOffset, x: 0 });
-                  } else {
+                  setTileXInput(val);
+                  if (val !== "" && val !== "-") {
                     const num = parseInt(val, 10);
                     if (!isNaN(num)) {
                       setTileOffset({ ...tileOffset, x: num });
+                    }
+                  }
+                }}
+                onBlur={() => {
+                  if (tileXInput === "" || tileXInput === "-") {
+                    setTileOffset({ ...tileOffset, x: 0 });
+                    setTileXInput("0");
+                  } else {
+                    const num = parseInt(tileXInput, 10);
+                    if (!isNaN(num)) {
+                      setTileOffset({ ...tileOffset, x: num });
+                      setTileXInput(String(num));
                     }
                   }
                 }}
@@ -60,15 +89,26 @@ export default function ImageControls() {
               <label className="block text-xs text-gray-600 mb-1">Y 오프셋</label>
               <input
                 type="number"
-                value={tileOffset.y}
+                value={tileYInput}
                 onChange={(e) => {
                   const val = e.target.value;
-                  if (val === "") {
-                    setTileOffset({ ...tileOffset, y: 0 });
-                  } else {
+                  setTileYInput(val);
+                  if (val !== "" && val !== "-") {
                     const num = parseInt(val, 10);
                     if (!isNaN(num)) {
                       setTileOffset({ ...tileOffset, y: num });
+                    }
+                  }
+                }}
+                onBlur={() => {
+                  if (tileYInput === "" || tileYInput === "-") {
+                    setTileOffset({ ...tileOffset, y: 0 });
+                    setTileYInput("0");
+                  } else {
+                    const num = parseInt(tileYInput, 10);
+                    if (!isNaN(num)) {
+                      setTileOffset({ ...tileOffset, y: num });
+                      setTileYInput(String(num));
                     }
                   }
                 }}
@@ -118,15 +158,26 @@ export default function ImageControls() {
             <label className="block text-xs text-gray-600 mb-1">X 위치</label>
             <input
               type="number"
-              value={imageOffset.x}
+              value={xInput}
               onChange={(e) => {
                 const val = e.target.value;
-                if (val === "") {
-                  setImageOffset({ ...imageOffset, x: 0 });
-                } else {
+                setXInput(val);
+                if (val !== "" && val !== "-") {
                   const num = parseInt(val, 10);
                   if (!isNaN(num)) {
                     setImageOffset({ ...imageOffset, x: num });
+                  }
+                }
+              }}
+              onBlur={() => {
+                if (xInput === "" || xInput === "-") {
+                  setImageOffset({ ...imageOffset, x: 0 });
+                  setXInput("0");
+                } else {
+                  const num = parseInt(xInput, 10);
+                  if (!isNaN(num)) {
+                    setImageOffset({ ...imageOffset, x: num });
+                    setXInput(String(num));
                   }
                 }
               }}
@@ -137,15 +188,26 @@ export default function ImageControls() {
             <label className="block text-xs text-gray-600 mb-1">Y 위치</label>
             <input
               type="number"
-              value={imageOffset.y}
+              value={yInput}
               onChange={(e) => {
                 const val = e.target.value;
-                if (val === "") {
-                  setImageOffset({ ...imageOffset, y: 0 });
-                } else {
+                setYInput(val);
+                if (val !== "" && val !== "-") {
                   const num = parseInt(val, 10);
                   if (!isNaN(num)) {
                     setImageOffset({ ...imageOffset, y: num });
+                  }
+                }
+              }}
+              onBlur={() => {
+                if (yInput === "" || yInput === "-") {
+                  setImageOffset({ ...imageOffset, y: 0 });
+                  setYInput("0");
+                } else {
+                  const num = parseInt(yInput, 10);
+                  if (!isNaN(num)) {
+                    setImageOffset({ ...imageOffset, y: num });
+                    setYInput(String(num));
                   }
                 }
               }}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import FontLoader from "@/components/FontLoader";
 
 export const metadata: Metadata = {
   title: "Notion Cover Maker - Perfect Covers in Seconds",
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <FontLoader />
+        {children}
+      </body>
     </html>
   );
 }

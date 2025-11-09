@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 interface ImageUploadProps {
   onUpload: (file: File) => void;
@@ -9,6 +9,32 @@ interface ImageUploadProps {
 export default function ImageUpload({ onUpload }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  // 드롭 영역 외부에서 드롭 시 기본 동작 방지 (브라우저가 파일을 열지 않도록)
+  useEffect(() => {
+    const handleDocumentDragOver = (e: DragEvent) => {
+      // 드롭 영역이 아닌 곳에서만 기본 동작 방지
+      if (!dropZoneRef.current?.contains(e.target as Node)) {
+        e.preventDefault();
+      }
+    };
+
+    const handleDocumentDrop = (e: DragEvent) => {
+      // 드롭 영역이 아닌 곳에서 드롭 시 기본 동작 방지
+      if (!dropZoneRef.current?.contains(e.target as Node)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    document.addEventListener("dragover", handleDocumentDragOver);
+    document.addEventListener("drop", handleDocumentDrop);
+
+    return () => {
+      document.removeEventListener("dragover", handleDocumentDragOver);
+      document.removeEventListener("drop", handleDocumentDrop);
+    };
+  }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,14 +45,36 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) {
-      onUpload(file);
+    e.stopPropagation();
+    
+    console.log("Drop event triggered", e.dataTransfer.files);
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      console.log("Dropped file:", file.name, file.type, file.size);
+      if (file && file.type.startsWith("image/")) {
+        onUpload(file);
+      } else {
+        alert("이미지 파일만 업로드할 수 있습니다.");
+      }
     }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "copy";
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
@@ -36,8 +84,13 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
         ref={dropZoneRef}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
         className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
-        onClick={() => fileInputRef.current?.click()}
+        onClick={(e) => {
+          e.stopPropagation();
+          fileInputRef.current?.click();
+        }}
       >
         <input
           ref={fileInputRef}

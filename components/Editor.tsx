@@ -97,20 +97,37 @@ export default function Editor() {
 
   const handleImageUpload = async (file: File) => {
     try {
+      console.log("Uploading file:", file.name, file.type, file.size);
+      
+      // 파일 크기 체크 (20MB 제한)
+      if (file.size > 20 * 1024 * 1024) {
+        alert("이미지 크기가 너무 큽니다. 20MB 이하의 파일을 선택해주세요.");
+        return;
+      }
+
       const imageData = await loadImageFromFile(file);
+      console.log("Image loaded:", imageData);
+      
+      if (!imageData.bitmap) {
+        throw new Error("이미지를 로드할 수 없습니다.");
+      }
+
       setImage(imageData);
 
       // 자동 색상 추출 및 그라데이션 제안
-      if (imageData.bitmap) {
+      try {
         const colors = await extractDominantColors(imageData.bitmap);
         if (colors.length >= 2) {
           const { brightest, darkest } = getBrightestAndDarkest(colors);
           // 그라데이션 제안은 BackgroundPanel에서 처리
         }
+      } catch (colorError) {
+        console.warn("Color extraction failed:", colorError);
+        // 색상 추출 실패는 치명적이지 않으므로 계속 진행
       }
     } catch (error) {
       console.error("Image upload failed:", error);
-      alert("이미지 업로드에 실패했습니다.");
+      alert(`이미지 업로드에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
     }
   };
 
