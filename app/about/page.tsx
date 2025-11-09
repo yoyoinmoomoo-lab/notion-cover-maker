@@ -32,7 +32,7 @@ export default function AboutPage() {
 
           <h2 className="text-2xl font-semibold mt-8 mb-4">문의</h2>
           <p className="mb-4">
-            문의사항이 있으시면 contact@yourdomain.com으로 연락주세요.
+            문의사항이 있으시면 yoyo.in.moomoo@gmail.com으로 연락주세요.
           </p>
         </div>
 

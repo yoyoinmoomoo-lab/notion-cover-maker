@@ -49,7 +49,7 @@ export default function PrivacyPage() {
           </p>
 
           <p className="mt-8">
-            If you have questions, contact us at: contact@yourdomain.com
+            If you have questions, contact us at: yoyo.in.moomoo@gmail.com
           </p>
         </div>
 
