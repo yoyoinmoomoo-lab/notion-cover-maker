@@ -29,8 +29,8 @@ const defaultState: EditorState = {
   mode: "fill",
   background: { type: "solid", color: "#ffffff" },
   output: {
-    width: 3000,
-    height: 1200,
+    width: 1500,
+    height: 600,
     format: "png",
     quality: 0.9,
   },
