@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 import { loadImageFromFile } from "@/utils/imageUtils";
 import { extractDominantColors, getBrightestAndDarkest } from "@/utils/colorExtractor";
@@ -16,7 +15,6 @@ import TextOverlayPanel from "./TextOverlayPanel";
 import ImageControls from "./ImageControls";
 
 export default function Editor() {
-  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRendering, setIsRendering] = useState(false);
   const {
@@ -66,7 +64,7 @@ export default function Editor() {
         (activeElement.tagName === "INPUT" ||
           activeElement.tagName === "TEXTAREA" ||
           activeElement.tagName === "SELECT" ||
-          activeElement.isContentEditable)
+          (activeElement instanceof HTMLElement && activeElement.isContentEditable))
       ) {
         return;
       }
@@ -104,7 +102,7 @@ export default function Editor() {
       
       // 파일 크기 체크 (20MB 제한)
       if (file.size > 20 * 1024 * 1024) {
-        alert(t("upload_size_error"));
+        alert("Image size is too large. Please select a file under 20MB.");
         return;
       }
 
@@ -130,7 +128,7 @@ export default function Editor() {
       }
             } catch (error) {
               console.error("Image upload failed:", error);
-              alert(`${t("upload_error")}: ${error instanceof Error ? error.message : t("upload_error")}`);
+              alert(`Image upload failed: ${error instanceof Error ? error.message : "Unknown error"}`);
             }
   };
 

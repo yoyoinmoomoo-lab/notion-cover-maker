@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 import { extractDominantColors, getBrightestAndDarkest } from "@/utils/colorExtractor";
 import type { Background } from "@/types";
 
 export default function BackgroundPanel() {
-  const { t } = useTranslation();
   const { background, setBackground, image } = useEditorStore();
   const [suggestedGradient, setSuggestedGradient] = useState<{
     color1: string;
@@ -45,12 +43,12 @@ export default function BackgroundPanel() {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-3">{t("background_title")}</h2>
+      <h2 className="text-lg font-semibold mb-3">배경</h2>
 
       <div className="space-y-4">
         {/* 단색 */}
         <div>
-          <label className="block text-sm font-medium mb-2">{t("background_solid")}</label>
+          <label className="block text-sm font-medium mb-2">단색</label>
           <div className="flex items-center gap-2">
             <input
               type="radio"
@@ -76,7 +74,7 @@ export default function BackgroundPanel() {
 
         {/* 그라데이션 */}
         <div>
-          <label className="block text-sm font-medium mb-2">{t("background_gradient")}</label>
+          <label className="block text-sm font-medium mb-2">그라데이션</label>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <input
@@ -95,7 +93,7 @@ export default function BackgroundPanel() {
                 }}
                 className="mr-2"
               />
-              <span className="text-sm">{t("background_gradient_use")}</span>
+              <span className="text-sm">그라데이션 사용</span>
             </div>
 
             {background.type === "gradient" && (
@@ -105,12 +103,12 @@ export default function BackgroundPanel() {
                     onClick={handleAutoGradient}
                     className="text-sm text-blue-600 hover:underline"
                   >
-                    {t("background_gradient_auto")}
+                    자동 추출 색상 사용
                   </button>
                 )}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs text-gray-600">{t("background_gradient_start")}</label>
+                    <label className="text-xs text-gray-600">시작 색</label>
                     <input
                       type="color"
                       value={background.color1}
@@ -125,7 +123,7 @@ export default function BackgroundPanel() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-600">{t("background_gradient_end")}</label>
+                    <label className="text-xs text-gray-600">끝 색</label>
                     <input
                       type="color"
                       value={background.color2}
@@ -141,7 +139,7 @@ export default function BackgroundPanel() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600">{t("background_gradient_angle")}</label>
+                  <label className="text-xs text-gray-600">각도 (0-360°)</label>
                   <input
                     type="range"
                     min="0"
@@ -167,7 +165,7 @@ export default function BackgroundPanel() {
 
         {/* 블러 확장 (옵션) */}
         <div>
-          <label className="block text-sm font-medium mb-2">{t("background_blur")}</label>
+          <label className="block text-sm font-medium mb-2">블러 확장</label>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <input
@@ -178,14 +176,14 @@ export default function BackgroundPanel() {
                 }}
                 className="mr-2"
               />
-              <span className="text-sm">{t("background_blur_use")}</span>
+              <span className="text-sm">블러 확장 사용</span>
             </div>
 
             {background.type === "blur" && (
               <>
                 <div>
                   <label className="text-xs text-gray-600">
-                    {t("background_blur_radius", { radius: background.radius })}
+                    블러 반경: {background.radius}px
                   </label>
                   <input
                     type="range"
@@ -204,7 +202,7 @@ export default function BackgroundPanel() {
                 </div>
                 <div>
                   <label className="text-xs text-gray-600">
-                    {t("background_blur_scale", { scale: background.scale.toFixed(1) })}
+                    확대 배율: {background.scale.toFixed(1)}x
                   </label>
                   <input
                     type="range"

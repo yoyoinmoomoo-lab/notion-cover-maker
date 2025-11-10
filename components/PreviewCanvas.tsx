@@ -3,7 +3,7 @@
 import { useEditorStore } from "@/store/editorStore";
 
 interface PreviewCanvasProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   showSafeZone: boolean;
   isRendering: boolean;
 }
