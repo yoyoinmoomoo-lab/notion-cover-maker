@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 
 export default function ImageControls() {
+  const { t } = useTranslation();
   const {
     mode,
     imageOffset,
@@ -38,11 +40,11 @@ export default function ImageControls() {
   if (mode === "tile") {
     return (
       <div className="bg-white rounded-lg shadow p-4">
-        <h2 className="text-lg font-semibold mb-3">타일 조정</h2>
+        <h2 className="text-lg font-semibold mb-3">{t("tile_controls_title")}</h2>
         <div className="space-y-3">
           <div>
             <label className="block text-sm text-gray-600 mb-1">
-              스케일: {tileScale.toFixed(2)}x
+              {t("tile_scale", { scale: tileScale.toFixed(2) })}
             </label>
             <input
               type="range"
@@ -56,7 +58,7 @@ export default function ImageControls() {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs text-gray-600 mb-1">X 오프셋</label>
+              <label className="block text-xs text-gray-600 mb-1">{t("tile_offset_x")}</label>
               <input
                 type="number"
                 value={tileXInput}
@@ -86,7 +88,7 @@ export default function ImageControls() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Y 오프셋</label>
+              <label className="block text-xs text-gray-600 mb-1">{t("tile_offset_y")}</label>
               <input
                 type="number"
                 value={tileYInput}
@@ -123,11 +125,11 @@ export default function ImageControls() {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-3">이미지 조정</h2>
+      <h2 className="text-lg font-semibold mb-3">{t("image_controls_title")}</h2>
       <div className="space-y-3">
         <div>
           <label className="block text-sm text-gray-600 mb-1">
-            확대/축소: {(imageScale * 100).toFixed(0)}%
+            {t("image_scale", { percent: (imageScale * 100).toFixed(0) })}
           </label>
           <input
             type="range"
@@ -141,7 +143,7 @@ export default function ImageControls() {
         </div>
         <div>
           <label className="block text-sm text-gray-600 mb-1">
-            회전: {imageRotation}°
+            {t("image_rotation", { degrees: imageRotation })}
           </label>
           <input
             type="range"
@@ -155,7 +157,7 @@ export default function ImageControls() {
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs text-gray-600 mb-1">X 위치</label>
+            <label className="block text-xs text-gray-600 mb-1">{t("image_position_x")}</label>
             <input
               type="number"
               value={xInput}
@@ -185,7 +187,7 @@ export default function ImageControls() {
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Y 위치</label>
+            <label className="block text-xs text-gray-600 mb-1">{t("image_position_y")}</label>
             <input
               type="number"
               value={yInput}
@@ -216,7 +218,7 @@ export default function ImageControls() {
           </div>
         </div>
         <div className="text-xs text-gray-500">
-          키보드 화살표 키로 미세 조정 가능 (Shift: 10px)
+          {t("image_keyboard_hint")}
         </div>
       </div>
     </div>

@@ -1,15 +1,17 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 
-const PRESETS = [
-  { name: "Desktop (권장)", width: 1500, height: 600 },
-  { name: "Tablet", width: 1170, height: 290 },
-  { name: "Mobile", width: 1170, height: 445 },
-];
-
 export default function SizePresetPanel() {
+  const { t } = useTranslation();
   const { output, setOutput, showSafeZone, setShowSafeZone } = useEditorStore();
+
+  const PRESETS = [
+    { name: t("size_desktop"), width: 1500, height: 600 },
+    { name: t("size_tablet"), width: 1170, height: 290 },
+    { name: t("size_mobile"), width: 1170, height: 445 },
+  ];
 
   const handlePreset = (width: number, height: number) => {
     setOutput({ width, height });
@@ -17,7 +19,7 @@ export default function SizePresetPanel() {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-3">사이즈</h2>
+      <h2 className="text-lg font-semibold mb-3">{t("size_title")}</h2>
 
       <div className="space-y-3">
         {PRESETS.map((preset) => (
@@ -38,10 +40,10 @@ export default function SizePresetPanel() {
         ))}
 
         <div className="pt-2 border-t">
-          <div className="text-sm font-medium mb-2">커스텀</div>
+          <div className="text-sm font-medium mb-2">{t("size_custom")}</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-gray-600">폭</label>
+              <label className="text-xs text-gray-600">{t("size_width")}</label>
               <input
                 type="number"
                 value={output.width}
@@ -62,7 +64,7 @@ export default function SizePresetPanel() {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-600">높이</label>
+              <label className="text-xs text-gray-600">{t("size_height")}</label>
               <input
                 type="number"
                 value={output.height}
@@ -92,14 +94,14 @@ export default function SizePresetPanel() {
               checked={showSafeZone}
               onChange={(e) => setShowSafeZone(e.target.checked)}
             />
-            <span className="text-sm">세이프존 표시 (중앙 40%)</span>
+            <span className="text-sm">{t("size_safe_zone")}</span>
           </label>
         </div>
 
         <div className="pt-4 border-t">
           <div className="text-xs text-gray-500 space-y-1">
-            <div>📏 Notion 권장 비율: 5 : 2</div>
-            <div>💡 JPG 또는 PNG, 72 DPI 권장</div>
+            <div>{t("size_ratio_hint")}</div>
+            <div>{t("size_dpi_hint")}</div>
           </div>
         </div>
       </div>

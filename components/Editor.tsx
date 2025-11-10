@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 import { loadImageFromFile } from "@/utils/imageUtils";
 import { extractDominantColors, getBrightestAndDarkest } from "@/utils/colorExtractor";
@@ -15,6 +16,7 @@ import TextOverlayPanel from "./TextOverlayPanel";
 import ImageControls from "./ImageControls";
 
 export default function Editor() {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRendering, setIsRendering] = useState(false);
   const {
@@ -102,7 +104,7 @@ export default function Editor() {
       
       // 파일 크기 체크 (20MB 제한)
       if (file.size > 20 * 1024 * 1024) {
-        alert("이미지 크기가 너무 큽니다. 20MB 이하의 파일을 선택해주세요.");
+        alert(t("upload_size_error"));
         return;
       }
 
@@ -126,10 +128,10 @@ export default function Editor() {
         console.warn("Color extraction failed:", colorError);
         // 색상 추출 실패는 치명적이지 않으므로 계속 진행
       }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      alert(`이미지 업로드에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
-    }
+            } catch (error) {
+              console.error("Image upload failed:", error);
+              alert(`${t("upload_error")}: ${error instanceof Error ? error.message : t("upload_error")}`);
+            }
   };
 
   const handleRender = async () => {

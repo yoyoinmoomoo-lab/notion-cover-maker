@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 
 interface DownloadButtonProps {
@@ -10,6 +11,7 @@ interface DownloadButtonProps {
 const AD_DURATION = 5; // 5초 광고 카운트다운
 
 export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
+  const { t } = useTranslation();
   const {
     output,
     mode,
@@ -117,18 +119,18 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
         <div
           className="border border-gray-300 rounded p-3"
           role="complementary"
-          aria-label="광고"
+          aria-label={t("download_ad_label")}
         >
-          <p className="text-xs text-gray-600 mb-3">광고</p>
+          <p className="text-xs text-gray-600 mb-3">{t("download_ad_label")}</p>
           {/* 광고 슬롯 (실제 AdSense 코드로 교체) */}
           <div
             id="adsense-slot"
             className="bg-gray-100 rounded min-h-[250px] flex items-center justify-center"
           >
             <div className="text-center text-gray-400 text-sm">
-              <div className="mb-2">광고 영역</div>
+              <div className="mb-2">{t("download_ad_placeholder")}</div>
               <div className="text-xs">
-                (AdSense 광고 단위가 여기에 표시됩니다)
+                {t("download_ad_description")}
               </div>
             </div>
           </div>
@@ -139,11 +141,11 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
           <div className="text-center">
             {countdown > 0 ? (
               <p className="text-sm text-gray-600">
-                잠시만요… 준비 중입니다. ({countdown}초)
+                {t("download_countdown", { seconds: countdown })}
               </p>
             ) : (
               <p className="text-sm text-gray-600">
-                다운로드를 시작할 수 있어요.
+                {t("download_ready")}
               </p>
             )}
           </div>
@@ -156,7 +158,7 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
             }}
             className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            다운로드
+            {t("download_action")}
           </button>
         </div>
       </div>
@@ -175,7 +177,7 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
               : "bg-white border-gray-300"
           }`}
         >
-          PNG
+          {t("download_format_png")}
         </button>
         <button
           onClick={() => setOutput({ format: "jpeg" })}
@@ -185,13 +187,13 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
               : "bg-white border-gray-300"
           }`}
         >
-          JPEG
+          {t("download_format_jpeg")}
         </button>
       </div>
       {output.format === "jpeg" && (
         <div className="mb-2">
           <label className="block text-xs text-gray-600 mb-1">
-            품질: {Math.round(output.quality * 100)}%
+            {t("download_quality", { quality: Math.round(output.quality * 100) })}
           </label>
           <input
             type="range"
@@ -210,7 +212,7 @@ export default function DownloadButton({ canvasRef }: DownloadButtonProps) {
         onClick={handleDownloadClick}
         className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
       >
-        다운로드 ({output.format.toUpperCase()})
+        {t("download_button", { format: output.format.toUpperCase() })}
       </button>
     </div>
   );

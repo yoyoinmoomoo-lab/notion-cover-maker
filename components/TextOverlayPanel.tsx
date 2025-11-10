@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 
 const FONTS = [
@@ -11,6 +12,7 @@ const FONTS = [
 ];
 
 export default function TextOverlayPanel() {
+  const { t } = useTranslation();
   const { text, setText } = useEditorStore();
 
   if (!text.enabled) {
@@ -22,7 +24,7 @@ export default function TextOverlayPanel() {
             checked={false}
             onChange={(e) => setText({ enabled: e.target.checked })}
           />
-          <span className="text-sm font-medium">텍스트 오버레이 사용</span>
+          <span className="text-sm font-medium">{t("text_enable")}</span>
         </label>
       </div>
     );
@@ -31,31 +33,31 @@ export default function TextOverlayPanel() {
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold">텍스트 오버레이</h2>
+        <h2 className="text-lg font-semibold">{t("text_title")}</h2>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={text.enabled}
             onChange={(e) => setText({ enabled: e.target.checked })}
           />
-          <span className="text-sm">사용</span>
+          <span className="text-sm">{t("text_use")}</span>
         </label>
       </div>
 
       <div className="space-y-3">
         <div>
-          <label className="block text-xs text-gray-600 mb-1">내용</label>
+          <label className="block text-xs text-gray-600 mb-1">{t("text_content")}</label>
           <input
             type="text"
             value={text.content}
             onChange={(e) => setText({ content: e.target.value })}
             className="w-full px-2 py-1 border rounded"
-            placeholder="텍스트 입력"
+            placeholder={t("text_content_placeholder")}
           />
         </div>
 
         <div>
-          <label className="block text-xs text-gray-600 mb-1">폰트</label>
+          <label className="block text-xs text-gray-600 mb-1">{t("text_font")}</label>
           <select
             value={text.font}
             onChange={(e) => setText({ font: e.target.value })}
@@ -71,7 +73,7 @@ export default function TextOverlayPanel() {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs text-gray-600 mb-1">크기</label>
+            <label className="block text-xs text-gray-600 mb-1">{t("text_size")}</label>
             <input
               type="number"
               value={text.size}
@@ -84,7 +86,7 @@ export default function TextOverlayPanel() {
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">두께</label>
+            <label className="block text-xs text-gray-600 mb-1">{t("text_weight")}</label>
             <select
               value={text.weight}
               onChange={(e) =>
@@ -92,18 +94,18 @@ export default function TextOverlayPanel() {
               }
               className="w-full px-2 py-1 border rounded"
             >
-              <option value="300">Light</option>
-              <option value="400">Regular</option>
-              <option value="500">Medium</option>
-              <option value="600">Semi Bold</option>
-              <option value="700">Bold</option>
+              <option value="300">{t("text_weight_light")}</option>
+              <option value="400">{t("text_weight_regular")}</option>
+              <option value="500">{t("text_weight_medium")}</option>
+              <option value="600">{t("text_weight_semibold")}</option>
+              <option value="700">{t("text_weight_bold")}</option>
             </select>
           </div>
         </div>
 
         <div>
           <label className="block text-xs text-gray-600 mb-1">
-            문자간격: {text.tracking}px
+            {t("text_tracking", { tracking: text.tracking })}
           </label>
           <input
             type="range"
@@ -118,7 +120,7 @@ export default function TextOverlayPanel() {
         </div>
 
         <div>
-          <label className="block text-xs text-gray-600 mb-1">색상</label>
+          <label className="block text-xs text-gray-600 mb-1">{t("text_color")}</label>
           <div className="flex items-center gap-2">
             <input
               type="color"
@@ -143,12 +145,12 @@ export default function TextOverlayPanel() {
               checked={text.shadow}
               onChange={(e) => setText({ shadow: e.target.checked })}
             />
-            <span className="text-sm">그림자 효과</span>
+            <span className="text-sm">{t("text_shadow")}</span>
           </label>
         </div>
 
         <div>
-          <label className="block text-xs text-gray-600 mb-1">정렬</label>
+          <label className="block text-xs text-gray-600 mb-1">{t("text_align")}</label>
           <div className="flex gap-2">
             {(["left", "center", "right"] as const).map((align) => (
               <button
@@ -160,7 +162,7 @@ export default function TextOverlayPanel() {
                     : "bg-white border-gray-300"
                 }`}
               >
-                {align === "left" ? "왼쪽" : align === "center" ? "가운데" : "오른쪽"}
+                {align === "left" ? t("text_align_left") : align === "center" ? t("text_align_center") : t("text_align_right")}
               </button>
             ))}
           </div>

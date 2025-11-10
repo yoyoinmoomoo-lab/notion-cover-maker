@@ -1,12 +1,14 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ImageUploadProps {
   onUpload: (file: File) => void;
 }
 
 export default function ImageUpload({ onUpload }: ImageUploadProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +58,7 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
       if (file && file.type.startsWith("image/")) {
         onUpload(file);
       } else {
-        alert("이미지 파일만 업로드할 수 있습니다.");
+        alert(t("upload_error"));
       }
     }
   };
@@ -79,7 +81,7 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-3">이미지 업로드</h2>
+      <h2 className="text-lg font-semibold mb-3">{t("upload_title")}</h2>
       <div
         ref={dropZoneRef}
         onDrop={handleDrop}
@@ -101,8 +103,8 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
         />
         <div className="space-y-2">
           <div className="text-4xl">📷</div>
-          <p className="text-gray-600">이미지를 드롭하거나 클릭하여 업로드</p>
-          <p className="text-sm text-gray-400">PNG, JPG, WebP 지원</p>
+          <p className="text-gray-600">{t("upload_desc")}</p>
+          <p className="text-sm text-gray-400">{t("upload_supported")}</p>
         </div>
       </div>
     </div>

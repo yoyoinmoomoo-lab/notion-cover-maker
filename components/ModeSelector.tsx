@@ -1,32 +1,34 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/store/editorStore";
 import type { Mode } from "@/types";
 
 export default function ModeSelector() {
+  const { t } = useTranslation();
   const { mode, setMode } = useEditorStore();
 
-  const modes: { value: Mode; label: string; desc: string }[] = [
+  const modes: { value: Mode; label: string; descKey: string }[] = [
     {
       value: "fill",
-      label: "Fill",
-      desc: "비율 유지 확대, 중앙 크롭",
+      label: t("mode_fill"),
+      descKey: "mode_fill_desc",
     },
     {
       value: "fit",
-      label: "Fit",
-      desc: "전체 보이게 배치",
+      label: t("mode_fit"),
+      descKey: "mode_fit_desc",
     },
     {
       value: "tile",
-      label: "Tile",
-      desc: "반복 패턴",
+      label: t("mode_tile"),
+      descKey: "mode_tile_desc",
     },
   ];
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-3">배치 모드</h2>
+      <h2 className="text-lg font-semibold mb-3">{t("mode_title")}</h2>
       <div className="space-y-2">
         {modes.map((m) => (
           <button
@@ -39,7 +41,7 @@ export default function ModeSelector() {
             }`}
           >
             <div className="font-medium">{m.label}</div>
-            <div className="text-sm text-gray-600">{m.desc}</div>
+            <div className="text-sm text-gray-600">{t(m.descKey)}</div>
           </button>
         ))}
       </div>
